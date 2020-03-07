@@ -1,4 +1,4 @@
-package br.com.trowdev;
+package br.com.trowdev.cursomc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
