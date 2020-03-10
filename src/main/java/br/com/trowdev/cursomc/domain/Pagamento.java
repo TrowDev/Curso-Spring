@@ -1,41 +1,46 @@
 package br.com.trowdev.cursomc.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import br.com.trowdev.cursomc.domain.enums.EstadoPagamento;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Pagamento implements Serializable{
 
-public class Categoria implements Serializable{
-	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	private String nome;
+	private Integer estadoPagamento;
 	
-	@JsonManagedReference
-	@ManyToMany(mappedBy = "categorias")
-	private List<Produto> produtos = new ArrayList<>();
+//	@JsonBackReference
+	@OneToOne
+	@JoinColumn(name = "pedido_id")
+	@MapsId
+	private Pedido pedido;
 
-	public Categoria() {
+	public Pagamento() {
 		super();
 	}
-
-	public Categoria(Integer id, String nome) {
+	
+	public Pagamento(Integer id, EstadoPagamento estadoPagamento, Pedido pedido) {
 		super();
 		this.id = id;
-		this.nome = nome;
+		this.estadoPagamento = estadoPagamento.getCodigo();
+		this.pedido = pedido;
 	}
 
 	public Integer getId() {
@@ -46,20 +51,12 @@ public class Categoria implements Serializable{
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public EstadoPagamento getEstadoPagamento() {
+		return EstadoPagamento.toEnum(estadoPagamento);
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public List<Produto> getProdutos() {
-		return produtos;
-	}
-
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
+	public void setEstadoPagamento(EstadoPagamento estadoPagamento) {
+		this.estadoPagamento = estadoPagamento.getCodigo();
 	}
 
 	@Override
@@ -78,7 +75,7 @@ public class Categoria implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Categoria other = (Categoria) obj;
+		Pagamento other = (Pagamento) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
